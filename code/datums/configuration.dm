@@ -59,14 +59,18 @@
 	var/ircbot_ip = null
 
 	//External server configuration (for central bans etc)
+	var/goonhub_url = "https://goonhub.com"
 	var/goonhub_api_endpoint = null
 	var/goonhub_api_ip = null
 	var/goonhub_api_token = null
+	var/goonhub_ci_ip = null
 
 	var/goonhub_events_endpoint = null
 	var/goonhub_events_port = null
 	var/goonhub_events_channel = null
 	var/goonhub_events_password = null
+
+	var/goonhub_auth_enabled = FALSE
 
 	//Environment
 	var/env = "dev"
@@ -293,12 +297,16 @@
 			if ("ticklag")
 				world.tick_lag = text2num(value)
 
+			if ("goonhub_url")
+				config.goonhub_url = trimtext(value)
 			if ("goonhub_api_endpoint")
 				config.goonhub_api_endpoint = trimtext(value)
 			if ("goonhub_api_ip")
 				config.goonhub_api_ip = trimtext(value)
 			if ("goonhub_api_token")
 				config.goonhub_api_token = trimtext(value)
+			if ("goonhub_ci_ip")
+				config.goonhub_ci_ip = trimtext(value)
 
 			if ("goonhub_events_endpoint")
 				config.goonhub_events_endpoint = trimtext(value)
@@ -308,6 +316,9 @@
 				config.goonhub_events_channel = trimtext(value)
 			if ("goonhub_events_password")
 				config.goonhub_events_password = trimtext(value)
+
+			if ("goonhub_auth_enabled")
+				config.goonhub_auth_enabled = TRUE
 
 			if ("update_check_enabled")
 				config.update_check_enabled = 1

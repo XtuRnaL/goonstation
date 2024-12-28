@@ -267,7 +267,7 @@ var/global/meteor_shower_active = 0
 	var/sound_explode = 'sound/effects/exlow.ogg'
 	var/list/oredrops = list(/obj/item/raw_material/rock)
 	var/list/oredrops_rare = list(/obj/item/raw_material/rock)
-	var/transmute_material = null
+	var/datum/material/transmute_material = null
 	var/transmute_range = 4
 	var/meteorhit_chance = 100
 
@@ -374,6 +374,8 @@ var/global/meteor_shower_active = 0
 				continue
 			//let's not just go straight through unsimmed turfs and total the inside of the listening post
 			if (!issimulatedturf(T) || !istype(T, /turf/unsimulated))
+				if(istype(T, /turf/unsimulated/wall))
+					qdel(src)
 				continue
 			hit_object = 1
 			if (prob(meteorhit_chance))
@@ -438,7 +440,7 @@ var/global/meteor_shower_active = 0
 					if("statue")
 						if(distPercent < 40) // only inner 40% of range
 							if(M)
-								M.become_statue(transmute_material)
+								M.become_statue(transmute_material.getID())
 			else
 				G.setMaterial(transmute_material)
 
@@ -488,7 +490,7 @@ var/global/meteor_shower_active = 0
 	exp_hvy = 1
 	exp_lit = 2
 	exp_fsh = 3
-	oredrops = list(/obj/item/raw_material/char, /obj/item/raw_material/molitz, /obj/item/raw_material/rock)
+	oredrops = list(/obj/item/raw_material/char, /obj/item/raw_material/mauxite, /obj/item/raw_material/rock)
 	oredrops_rare = list(/obj/item/raw_material/starstone, /obj/item/raw_material/syreline)
 	transmute_range = 10
 	///Do we spawn a solid lump of rock on impact?

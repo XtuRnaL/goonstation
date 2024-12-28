@@ -327,6 +327,10 @@
 	if(src.traitHolder?.hasTrait("athletic"))
 		brute *=1.33
 
+	brute *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_BRUTE_REDUCTION) / 100
+	burn *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_BURN_REDUCTION) / 100
+	tox *= 1 - GET_ATOM_PROPERTY(src, PROP_MOB_TALISMAN_TOX_REDUCTION) / 100
+
 	if(src.mutantrace) //HOW
 		var/typemult
 		if(islist(src.mutantrace.typevulns))
@@ -424,7 +428,6 @@
 	TakeDamage(zone, max(brute, 0), max(burn, 0), 0, damage_type)
 
 /mob/living/carbon/human/HealDamage(zone, brute, burn, tox, var/bypass_reversal = FALSE)
-
 	if (src.traitHolder && src.traitHolder.hasTrait("reversal"))
 		src.TakeDamage(zone, brute, burn, tox, null, FALSE, TRUE)
 
@@ -646,3 +649,4 @@
 /mob/living/carbon/human/UpdateDamage()
 	..()
 	src.hud?.update_health_indicator()
+	src.update_health_monitor_icon()

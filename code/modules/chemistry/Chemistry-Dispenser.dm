@@ -19,7 +19,7 @@ TYPEINFO(/obj/machinery/chem_dispenser)
 	icon = 'icons/obj/chemical.dmi'
 	icon_state = "dispenser"
 	var/icon_base = "dispenser"
-	flags = FPRINT | NOSPLASH | TGUI_INTERACTIVE
+	flags = NOSPLASH | TGUI_INTERACTIVE
 	object_flags = NO_GHOSTCRITTER
 	var/health = 400
 	deconstruct_flags = DECON_SCREWDRIVER | DECON_WRENCH | DECON_CROWBAR | DECON_WELDER | DECON_WIRECUTTERS | DECON_MULTITOOL
@@ -46,7 +46,7 @@ TYPEINFO(/obj/machinery/chem_dispenser)
 
 		if(!starting_groups && current_state <= GAME_STATE_PREGAME)
 			var/area/A = get_area(src)
-			if(istype(A,/area/station/medical))
+			if(istype(A,/area/station/medical) && !istype(A, /area/station/medical/asylum))
 				starting_groups = list(/datum/reagent_group/default/potassium_iodide,
 									   /datum/reagent_group/default/styptic,
 								       /datum/reagent_group/default/silver_sulfadiazine)
@@ -338,7 +338,7 @@ TYPEINFO(/obj/machinery/chem_dispenser)
 					. = TRUE
 				else
 					var/obj/item/reagent_containers/newbeaker = usr.equipped()
-					if (istype(newbeaker, glass_path))
+					if (istype(newbeaker, glass_path) && !newbeaker.incompatible_with_chem_dispensers)
 						if (newbeaker.current_lid)
 							boutput(ui.user, SPAN_ALERT("You cannot put the [newbeaker.name] in the [src.name] while it has a lid on it."))
 							return
@@ -526,7 +526,7 @@ TYPEINFO(/obj/machinery/chem_dispenser)
 /obj/machinery/chem_dispenser/chef
 	name = "HAPPY CHEF Dispense-o-tronic"
 	desc = "It's covered in a thin layer of acrid-smelling dust. The contents probably taste more like preservatives than whatever they're supposed to be."
-	dispensable_reagents = list("ketchup","mustard","salt","pepper","gravy","chocolate","chocolate_milk","strawberry_milk")
+	dispensable_reagents = list("ketchup","mustard","salt","pepper","gravy","chocolate","chocolate_milk","strawberry_milk","milk")
 	icon_state = "alc_dispenser"
 	icon_base = "alc_dispenser"
 	glass_path = /obj/item/reagent_containers/food/drinks

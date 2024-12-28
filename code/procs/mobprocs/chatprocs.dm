@@ -939,7 +939,7 @@
 	usr.client.preferences.flying_chat_hidden = !usr.client.preferences.flying_chat_hidden
 	boutput(usr, SPAN_NOTICE("[usr.client.preferences.flying_chat_hidden ? "No longer": "Now"] seeing flying chat."))
 
-/mob/proc/show_message(msg, type, alt, alt_type, group = "", var/just_maptext, var/image/chat_maptext/assoc_maptext = null)
+/mob/proc/show_message(msg, type, alt, alt_type, group = "", just_maptext, image/chat_maptext/assoc_maptext = null)
 	if (!src.client)
 		return
 	if(isnull(msg) && isnull(assoc_maptext))
@@ -1001,7 +1001,7 @@
 // self_message (optional) is what the src mob sees  e.g. "You do something!"
 // blind_message (optional) is what blind people will hear e.g. "You hear something!"
 
-/mob/visible_message(var/message, var/self_message, var/blind_message, var/group = "")
+/mob/visible_message(message, self_message, blind_message, group = "")
 	for (var/mob/M in AIviewers(src))
 		if (!M.client && !isAI(M))
 			continue
@@ -1015,7 +1015,7 @@
 // Use for objects performing visible actions
 // message is output to anyone who can see, e.g. "The [src] does something!"
 // blind_message (optional) is what blind people will hear e.g. "You hear something!"
-/atom/proc/visible_message(var/message, var/blind_message, var/group = "")
+/atom/proc/visible_message(message, blind_message, group = "")
 	for (var/mob/M in AIviewers(src))
 		if (!M.client)
 			continue
@@ -1051,6 +1051,12 @@
 // it was about time we had this instead of just visible_message()
 /atom/proc/audible_message(var/message, var/alt, var/alt_type, var/group = "", var/just_maptext, var/image/chat_maptext/assoc_maptext = null)
 	for (var/mob/M in all_hearers(null, src))
+		if (istype(M, /mob/living/silicon/ai) && !M.client && M.hearing_check(1)) //if heard, relay msg to client mob if they're in aieye form
+			var/mob/living/silicon/ai/mainframe = M
+			var/mob/message_mob = mainframe.get_message_mob()
+			if(isAIeye(message_mob))
+				message_mob.show_message(message, null, alt, alt_type, group, just_maptext, assoc_maptext) // type=null as AIeyes can't hear directly
+			continue
 		if (!M.client)
 			continue
 		M.show_message(message, 2, alt, alt_type, group, just_maptext, assoc_maptext)

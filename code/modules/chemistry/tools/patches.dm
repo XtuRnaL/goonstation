@@ -1,13 +1,3 @@
-
-
-
-/mob/living/proc/handle_skin(var/mult = 1)
-	if (src.skin_process && length(src.skin_process))
-		for(var/obj/item/reagent_containers/patch/P in skin_process)
-			//P.process_skin(src, XXX * mult)
-			continue
-
-
 /* ================================================= */
 /* -------------------- Patches -------------------- */
 /* ================================================= */
@@ -23,7 +13,7 @@
 	var/style = "patch"
 	initial_volume = 30
 	event_handler_flags = HANDLE_STICKER | USE_FLUID_ENTER
-	flags = FPRINT | TABLEPASS | SUPPRESSATTACK | EXTRADELAY
+	flags = TABLEPASS | SUPPRESSATTACK | EXTRADELAY
 	rc_flags = RC_SPECTRO		// only spectroscopic analysis
 	var/in_use = 0
 	var/good_throw = 0
@@ -204,7 +194,8 @@
 				src.set_loc(M)
 				if (isliving(M))
 					var/mob/living/L = M
-					L.skin_process += src
+					L.applied_patches += src
+					L.setStatus("patches_applied", INFINITE_STATUS)
 					src.do_sticker_thing = TRUE
 			else
 				reagents.reaction(M, TOUCH, paramslist = list("nopenetrate","ignore_chemprot"))
@@ -254,7 +245,9 @@
 
 			if (isliving(attached))
 				var/mob/living/L = attached
-				L.skin_process -= src
+				L.applied_patches -= src
+				if (!length(L.applied_patches))
+					L.delStatus("patches_applied")
 		..()
 
 /* =================================================== */
@@ -366,12 +359,21 @@
 	medical = 1
 	initial_reagents = "synthflesh"
 
+/obj/item/reagent_containers/patch/synthetic
+	name = "synthetic anticyst"
+	desc = "It reeks like an abandoned TV dinner. Hopefully it's healthier than one."
+	icon_state = "synthpatch"
+	style = "synthpatch"
+	sticker_icon_state = "synthpatch"
+	initial_volume = 10
+	initial_reagents = "synthflesh"
+
 /obj/item/patch_stack
 	name = "Patch Stack"
 	desc = "A stack, holding patches. The top patch can be used."
 	icon = 'icons/obj/chemical.dmi'
 	icon_state = "patch_stack"
-	flags = FPRINT | TABLEPASS | SUPPRESSATTACK
+	flags = TABLEPASS | SUPPRESSATTACK
 	var/list/patches = list()
 
 	proc/update_overlay()
@@ -451,7 +453,7 @@ TYPEINFO(/obj/item/reagent_containers/mender)
 	var/tampered = 0
 	var/borg = 0
 	initial_volume = 200
-	flags = FPRINT | TABLEPASS | OPENCONTAINER | NOSPLASH | ATTACK_SELF_DELAY | ACCEPTS_MOUSEDROP_REAGENTS
+	flags = TABLEPASS | OPENCONTAINER | NOSPLASH | ATTACK_SELF_DELAY | ACCEPTS_MOUSEDROP_REAGENTS
 	c_flags = ONBELT
 	click_delay = 0.7 SECONDS
 	rc_flags = RC_SCALE | RC_VISIBLE | RC_SPECTRO
@@ -475,7 +477,7 @@ TYPEINFO(/obj/item/reagent_containers/mender)
 
 	on_reagent_change(add)
 		..()
-		if (src.reagents)
+		if (src.reagents && (src.reagents.total_temperature > 330 || src.reagents.total_temperature < 270))
 			src.reagents.temperature_cap = 330
 			src.reagents.temperature_min = 270
 			src.reagents.temperature_reagents(change_min = 0, change_cap = 0)
@@ -692,7 +694,7 @@ ABSTRACT_TYPE(/obj/item/reagent_containers/mender_refill_cartridge)
 	initial_reagents = "nicotine"
 	// item_state = "ecigrefill"
 	icon_state = "mender-refill"
-	flags = FPRINT | TABLEPASS
+	flags = TABLEPASS
 	var/image/fluid_image
 
 	New()

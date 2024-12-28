@@ -320,7 +320,7 @@ ADMIN_INTERACT_PROCS(/mob/living/silicon, proc/pick_law_rack)
 				thisR = "<span class='adminHearing' data-ctx='[M.client.chatOutput.getContextFlags()]'>[rendered]</span>"
 			M.show_message(thisR, 2)
 
-/mob/living/silicon/lastgasp(allow_dead=FALSE)
+/mob/living/silicon/lastgasp(allow_dead=FALSE, grunt)
 	..(allow_dead, grunt=pick("BZZT","WONK","ZAP","FZZZT","GRRNT","BEEP","BOOP"))
 
 /mob/living/silicon/proc/allowed(mob/M)
@@ -514,6 +514,7 @@ var/global/list/module_editors = list()
 			newname = default_name
 		else
 			newname = tgui_input_text(src, "You are a Robot. Would you like to change your name to something else?", "Name Change", default_name)
+			newname = remove_bad_name_characters(newname)
 			if(newname && newname != default_name)
 				phrase_log.log_phrase("name-cyborg", newname, no_duplicates=TRUE)
 		if (!newname)
@@ -563,6 +564,7 @@ var/global/list/module_editors = list()
 
 	if (src.syndicate || src.syndicate_possible)
 		if (src.mind.add_antagonist(ROLE_SYNDICATE_ROBOT, respect_mutual_exclusives = FALSE, source = ANTAGONIST_SOURCE_CONVERTED))
+			src.botcard.access += access_syndicate_shuttle
 			logTheThing(LOG_STATION, src, "[src] was made a Syndicate robot at [log_loc(src)]. [cause ? " Source: [constructTarget(cause,"combat")]" : ""]")
 			logTheThing(LOG_STATION, src, "[src.name] is connected to the default Syndicate rack [constructName(src.law_rack_connection)] [cause ? " Source: [constructTarget(cause,"combat")]" : ""]")
 			return TRUE
@@ -621,7 +623,7 @@ var/global/list/module_editors = list()
 	if (user)
 		var/area/A = get_area(src.law_rack_connection)
 		boutput(user, "You connect [src.name] to the stored law rack at [A.name].")
-	src.playsound_local(src, 'sound/misc/lawnotify.ogg', 100, flags = SOUND_IGNORE_SPACE)
+	src.playsound_local(src, 'sound/misc/lawnotify.ogg', 100, flags = SOUND_IGNORE_SPACE | SOUND_IGNORE_DEAF)
 	src.show_text("<h3>You have been connected to a law rack</h3>", "red")
 	src.show_laws()
 
@@ -692,3 +694,6 @@ var/global/list/module_editors = list()
 		// decode the symbols, because they will be encoded again when the law is spoken, and otherwise we'd double-dip
 		src.say(html_decode(a_law))
 		logTheThing(LOG_SAY, usr, "states a fake law: \"[a_law]\"")
+
+/mob/living/silicon/get_unequippable()
+	return

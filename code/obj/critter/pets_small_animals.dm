@@ -80,7 +80,7 @@
 	flying = 1
 	health_gain_from_food = 2
 	feed_text = "chirps happily!"
-	flags = FPRINT | CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE | FLUID_SUBMERGE
+	flags = CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
 	var/species = "parrot"						// the species, used to update icon
 	var/list/learned_words = null				// the single words that the bird knows
 	var/list/learned_phrases = null				// ^^^ for complete phrases
@@ -245,6 +245,8 @@
 			if (!isturf(I.loc))
 				continue
 			if (I.anchored || I.density)
+				continue
+			if(I.w_class >= W_CLASS_GIGANTIC || IS_NPC_ILLEGAL_ITEM(I))
 				continue
 			stuff_near_me += I
 		if (stuff_near_me.len)
@@ -878,7 +880,7 @@
 	chases_food = 1
 	health_gain_from_food = 2
 	feed_text = "caws happily!"
-	flags = FPRINT | CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
+	flags = CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
 	var/feather_color = list("#ffffff","#949494","#353535")
 	var/last_feather_time = 0
 
@@ -932,7 +934,7 @@
 	chases_food = 1
 	health_gain_from_food = 2
 	feed_text = "caws happily!"
-	flags = FPRINT | CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
+	flags = CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
 	var/feather_color = "#212121"
 	var/last_feather_time = 0
 
@@ -1179,7 +1181,7 @@
 	health_gain_from_food = 2
 	feed_text = "happily begins washing its food!"
 	pet_text = list("pets", "cuddles", "pats", "snuggles")
-	flags = FPRINT | CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
+	flags = CONDUCT | USEDELAY | TABLEPASS | FLUID_SUBMERGE
 
 	skinresult = /obj/item/clothing/head/raccoon
 	max_skins = 1

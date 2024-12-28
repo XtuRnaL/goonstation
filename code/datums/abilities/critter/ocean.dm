@@ -5,6 +5,7 @@
 	cooldown = 3 SECONDS
 	start_on_cooldown = 0
 	icon_state = "tears"
+	do_logs = FALSE
 
 /datum/targetable/critter/bury_hide/cast(atom/target)
 	if (..())
@@ -22,9 +23,12 @@
 /obj/overlay/tile_effect/cracks
 	icon = 'icons/effects/effects.dmi'
 	icon_state = "cracks"
-	event_handler_flags = USE_PROXIMITY
 
-	HasProximity(atom/movable/AM)
+	New()
+		..()
+		src.AddComponent(/datum/component/proximity)
+
+	EnteredProximity(atom/movable/AM)
 		..()
 		if (isliving(AM))
 			src.relaymove(AM,pick(cardinal))
@@ -42,7 +46,7 @@
 		var/spawntype = null
 
 
-		HasProximity(atom/movable/AM)
+		EnteredProximity(atom/movable/AM)
 			if (spawntype)
 				new spawntype(src)
 				spawntype = null
